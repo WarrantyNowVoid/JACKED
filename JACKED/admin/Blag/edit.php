@@ -134,9 +134,10 @@
             $("#croppicThumb").show();
             <?php 
                 // get some info about the existing thumb if we have one
-                if($post->thumbnail){
-                    $existingURL = $JACKED->config->base_url . $JACKED->admin->config->imgupload_directory . $post->thumbnail;
-                    $imagedetails = getimagesize(JACKED_SITE_ROOT . $JACKED->admin->config->imgupload_directory . $post->thumbnail); 
+                if($post->thumbnail && $post->thumbnail !== ''){
+                    $original =  substr($post->thumbnail, 0, strrpos($post->thumbnail, '_cropped.png'));
+                    $existingURL = $JACKED->config->base_url . $JACKED->admin->config->imgupload_directory . $original;
+                    $imagedetails = getimagesize(JACKED_SITE_ROOT . $JACKED->admin->config->imgupload_directory . $original); 
                     $existingWidth = $imagedetails[0] / 2;
                     $existingHeight = $imagedetails[1] / 2;
             ?>
@@ -149,9 +150,11 @@
                 var index = this.imgUrl.indexOf('"');
                 if(index > 0){
                     this.imgUrl = this.imgUrl.substring(0, index);
-                    console.log(this.imgUrl);
                 }
-            }
+            };
+            cropperOptions.onAfterImgCrop = function(){
+                this.obj.find('img').attr('src', this.imgUrl + '_cropped.png?' + new Date().getTime());
+            };
             <?php
                 }
             ?>
